@@ -11,4 +11,5 @@ export async function connectToMongoDB() {
     useUnifiedTopology: true,
   });
   console.log('Connected to MongoDB');
+  console.log('MONGO_URL', process.env.MONGO_URL);
 }
