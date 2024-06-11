@@ -14,5 +14,12 @@ module.exports = {
       },
     },
   },
+  color:{
+    extend:{
+      dhyey:{
+        400:"#FF1493"
+      }
+    }
+  },
   plugins: [],
 };

@@ -1,5 +1,9 @@
 "use client";
 import React, { useEffect, useState } from 'react';
+import { useSession } from "next-auth/react"
+import { toast, Bounce } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 const fetchProductData = async (slug) => {
     const res = await fetch(`http://localhost:3000/api/getbyid?id=${slug}`);
     const data = await res.json();
@@ -7,6 +11,7 @@ const fetchProductData = async (slug) => {
 }
 
 const Page = ({ params }) => {
+    const { data: session } = useSession()
 
     const [ans, setAns] = useState({});
     const [loading, setLoading] = useState(false);
@@ -29,6 +34,42 @@ const Page = ({ params }) => {
         
     }, [ans]);
 
+    const handleAdd = async (e) => {
+        if(!session){
+            toast.error('Please Login to add to cart!', {
+                position: "top-right",
+                autoClose: 1500,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+                });
+            return
+        }
+        e.preventDefault();
+        const res = await fetch('http://localhost:3000/api/addtocart', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name: session.user.name, email: session.user.email, productID: ans.products._id }),
+        })
+        const data = await res.json();
+        toast.success('Product added to cart!', {
+            position: "top-right",
+            autoClose: 1500,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            transition: Bounce
+            });
+    }
     return (
         <div>
             <section className="text-gray-600 body-font overflow-hidden">
@@ -191,10 +232,10 @@ const Page = ({ params }) => {
                                 <span className="title-font font-medium text-2xl text-gray-900">
                                 ₹{ans.products && ans.products.price}
                                 </span><br />
-                                <button className="flex ml-auto text-white bg-indigo-500 border-0 py-2 px-6 mx-2 focus:outline-none hover:bg-indigo-600 rounded">
+                                <button className="flex ml-auto text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-700 rounded">
                                     BUY
                                 </button>
-                                <button className="w-auto flex ml-auto text-white bg-indigo-500 border-0 py-2 focus:outline-none hover:bg-indigo-600 rounded">
+                                <button onClick={(e)=>handleAdd(e)} className="flex ml-auto text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-700 rounded">
                                     Add to Cart
                                 </button>
                                 <button className="rounded-full w-10 h-10 bg-gray-200 p-0 border-0 inline-flex items-center justify-center text-gray-500 ml-4">
