@@ -6,7 +6,7 @@ const fetchProductData = async (slug) => {
     return data;
 }
 
-const page = ({ params }) => {
+const Page = ({ params }) => {
 
     const [ans, setAns] = useState({});
     const [loading, setLoading] = useState(false);
@@ -219,4 +219,4 @@ const page = ({ params }) => {
     )
 }
 
-export default page
+export default Page
