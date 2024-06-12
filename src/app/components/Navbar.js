@@ -38,7 +38,7 @@ const Navbar = () => {
 
         </span>
         
-          <CiShoppingCart className='inline-block text-4xl' />My Cart
+          <Link href={'/mycart'}><CiShoppingCart className='inline-block text-4xl' />My Cart</Link>
         
       </div>
     </div>

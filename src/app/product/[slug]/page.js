@@ -37,7 +37,7 @@ const Page = ({ params }) => {
     return (
         <>
             <h1 className='text-3xl text-center mt-7 font-bold'>{params.slug}</h1>
-            {loading && <h1>Loading...</h1>}
+            {loading && <h1 className='my-3 text-3xl text-center'>Loading...</h1>}
             {
                 <section className="text-gray-600 body-font">
                     <div className="container px-5 py-10 mx-auto">

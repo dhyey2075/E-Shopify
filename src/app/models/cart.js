@@ -14,8 +14,13 @@ const cartSchema = new Schema({
     },
     productID: {
       type: String,
-      unique: true,
       required: true,
+      unique: true,
+    },
+    product: {
+      type: Object,
+      required: true,
+      unique: true,
       trim: true
     },
   });

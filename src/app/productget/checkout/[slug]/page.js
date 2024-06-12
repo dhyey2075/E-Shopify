@@ -1,8 +1,6 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import { useSession } from "next-auth/react"
-import { toast, Bounce } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import Link from 'next/link';
 
 const fetchProductData = async (slug) => {
@@ -13,9 +11,24 @@ const fetchProductData = async (slug) => {
 
 const Page = ({ params }) => {
     const { data: session } = useSession()
-
     const [ans, setAns] = useState({});
     const [loading, setLoading] = useState(false);
+    const [formData, setFormData] = useState({
+        email: '',
+        productID: '',
+        quantity: 1,
+        price: 0,
+        totalAmount: 0,
+        status: 'Pending',
+        shippingAddress: {
+            street: '',
+            city: '',
+            state: '',
+            postalCode: '',
+            country: ''
+        },
+        paymentMethod: 'Credit Card'
+    });
 
     useEffect(() => {
         setLoading(true);
@@ -32,59 +45,85 @@ const Page = ({ params }) => {
         getData();
     }, [params.slug]);
     useEffect(() => {
+        console.log(ans);
         
     }, [ans]);
 
-    const handleAdd = async (e) => {
-        if(!session){
-            toast.error('Please Login to add to cart!', {
-                position: "top-right",
-                autoClose: 1500,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-                });
-            return
-        }
+    //Order Form starts here
+
+    
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
+        setFormData(prevState => ({
+            ...prevState,
+            "price": ans.products.price,
+            "productID": ans.products._id,
+            "email": session.user.email,
+            "totalAmount": ans.products.price * formData.quantity,
+        }));
+    };
+
+    const handleNestedChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prevState => ({
+            ...prevState,
+            shippingAddress: {
+                ...prevState.shippingAddress,
+                [name]: value
+            }
+        }));
+    };
+
+    const handleSubmit = async(e) => {
         e.preventDefault();
-        const res = await fetch('http://localhost:3000/api/addtocart', {
+        console.log(ans)
+        const res = await fetch('http://localhost:3000/api/order', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ name: session.user.name, email: session.user.email, product:ans.products }),
-        })
+            body: JSON.stringify({ email: session.user.email, products:[{ productID: formData.productID, quantity: formData.quantity, price: formData.price }], totalAmount: formData.totalAmount, status: formData.status, shippingAddress: formData.shippingAddress, paymentMethod: formData.paymentMethod})
+        });
         const data = await res.json();
-        if(data.message==="Failed to add product to cart."){
-            toast.error('Product already added to cart.', {
-                position: "top-right",
-                autoClose: 1500,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce
-                });
-            return
-        }
-        toast.success('Product added to cart!', {
-            position: "top-right",
-            autoClose: 1500,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-            transition: Bounce
-            });
-    }
+        console.log("Order submitted", data);
+        const orderDetails = { email: session.user.email, products:[{ productID: formData.productID, quantity: formData.quantity, price: formData.price }], totalAmount: formData.totalAmount, status: formData.status, shippingAddress: formData.shippingAddress, paymentMethod: formData.paymentMethod};
+        sessionStorage.setItem('order', JSON.stringify(orderDetails));
+        console.log("saved to session");
+        console.log(sessionStorage.getItem('order'));
+        setFormData({
+            email: '',
+            productID: '',
+            quantity: 1,
+            price: 0,
+            totalAmount: 0,
+            status: 'Pending',
+            shippingAddress: {
+                street: '',
+                city: '',
+                state: '',
+                postalCode: '',
+                country: ''
+            },
+            paymentMethod: 'Credit Card'
+        });
+        
+    };
+    useEffect(() => {
+        // setFormData(prevState => ({
+        //     ...prevState,
+        //     "price": ans.products && ans.products.price,
+        //     "productID": ans.products && ans.products._id,
+        //     "totalAmount": ans.products && ans.products.price * formData.quantity,
+        // }));
+        console.log('Order Details:', formData);
+
+    },[formData])
+
     return (
         <div>
             <section className="text-gray-600 body-font overflow-hidden">
@@ -217,18 +256,11 @@ const Page = ({ params }) => {
                                 )}
                             </p>
                             <div className="flex mt-6 items-center pb-5 border-b-2 border-gray-100 mb-5">
-                                <div className="flex">
-                                    <span className="mr-3">Color</span>
-                                    <button className="border-2 border-gray-300 rounded-full w-6 h-6 focus:outline-none" />
-                                    <button className="border-2 border-gray-300 ml-1 bg-gray-700 rounded-full w-6 h-6 focus:outline-none" />
-                                    <button className="border-2 border-gray-300 ml-1 bg-indigo-500 rounded-full w-6 h-6 focus:outline-none" />
-                                </div>
+
                                 <div className="flex ml-6 items-center">
-                                    <span className="mr-3">Stock</span>
                                     <div className="relative">
-                                    {ans.products && ans.products.stock == 0 ? "Out of Stock" : `${ans.products && ans.products.stock} Available`}
-                                        <span className="absolute right-0 top-0 h-full w-10 text-center text-gray-600 pointer-events-none flex items-center justify-center">
-                                            {/* <svg
+                                        {/* <span className="absolute right-0 top-0 h-full w-10 text-center text-gray-600 pointer-events-none flex items-center justify-center">
+                                             <svg
                                                 fill="none"
                                                 stroke="currentColor"
                                                 strokeLinecap="round"
@@ -238,24 +270,18 @@ const Page = ({ params }) => {
                                                 viewBox="0 0 24 24"
                                             >
                                                 <path d="M6 9l6 6 6-6" />
-                                            </svg> */}
-                                        </span>
+                                            </svg> 
+                                        </span> */}
                                     </div>
                                 </div>
                             </div>
                             <div className="flex">
                                 <span className="title-font font-medium text-2xl text-gray-900">
-                                ₹{ans.products && ans.products.price}
+                                    ₹{ans.products && ans.products.price}
                                 </span><br />
                                 {ans.products && <Link href={`checkout/${ans.products._id}`}>
-                                <button className="flex ml-auto text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-700 rounded">
-                                    BUY
-                                </button>
                                 </Link>}
-                                <button onClick={(e)=>handleAdd(e)} className="flex ml-auto text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-700 rounded">
-                                    Add to Cart
-                                </button>
-                                <button className="rounded-full w-10 h-10 bg-gray-200 p-0 border-0 inline-flex items-center justify-center text-gray-500 ml-4">
+                                {/* <button className="rounded-full w-10 h-10 bg-gray-200 p-0 border-0 inline-flex items-center justify-center text-gray-500 ml-4">
                                     <svg
                                         fill="currentColor"
                                         strokeLinecap="round"
@@ -266,13 +292,110 @@ const Page = ({ params }) => {
                                     >
                                         <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
                                     </svg>
-                                </button>
+                                </button> */}
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
-
+            <form onSubmit={handleSubmit} className="max-w-lg mx-auto p-6 bg-white rounded-lg shadow-md">
+                <h2 className="text-2xl font-bold mb-4">Order Product</h2>
+                
+                
+                <div className="mb-4">
+                    <label className="block text-gray-700 mb-2" htmlFor="quantity">Quantity</label>
+                    <input
+                        type="number"
+                        id="quantity"
+                        name="quantity"
+                        value={formData.quantity}
+                        onChange={handleChange}
+                        className="w-full p-2 border border-gray-300 rounded"
+                        min="1"
+                        required
+                    />
+                </div>
+                
+                
+                <div className="mb-4">
+                    <label className="block text-gray-700 mb-2" htmlFor="street">Street</label>
+                    <input
+                        type="text"
+                        id="street"
+                        name="street"
+                        value={formData.shippingAddress.street}
+                        onChange={handleNestedChange}
+                        className="w-full p-2 border border-gray-300 rounded"
+                        required
+                    />
+                </div>
+                <div className="mb-4">
+                    <label className="block text-gray-700 mb-2" htmlFor="city">City</label>
+                    <input
+                        type="text"
+                        id="city"
+                        name="city"
+                        value={formData.shippingAddress.city}
+                        onChange={handleNestedChange}
+                        className="w-full p-2 border border-gray-300 rounded"
+                        required
+                    />
+                </div>
+                <div className="mb-4">
+                    <label className="block text-gray-700 mb-2" htmlFor="state">State</label>
+                    <input
+                        type="text"
+                        id="state"
+                        name="state"
+                        value={formData.shippingAddress.state}
+                        onChange={handleNestedChange}
+                        className="w-full p-2 border border-gray-300 rounded"
+                        required
+                    />
+                </div>
+                <div className="mb-4">
+                    <label className="block text-gray-700 mb-2" htmlFor="postalCode">Postal Code</label>
+                    <input
+                        type="text"
+                        id="postalCode"
+                        name="postalCode"
+                        value={formData.shippingAddress.postalCode}
+                        onChange={handleNestedChange}
+                        className="w-full p-2 border border-gray-300 rounded"
+                        required
+                    />
+                </div>
+                <div className="mb-4">
+                    <label className="block text-gray-700 mb-2" htmlFor="country">Country</label>
+                    <input
+                        type="text"
+                        id="country"
+                        name="country"
+                        value={formData.shippingAddress.country}
+                        onChange={handleNestedChange}
+                        className="w-full p-2 border border-gray-300 rounded"
+                        required
+                    />
+                </div>
+                <div className="mb-4">
+                    <label className="block text-gray-700 mb-2" htmlFor="paymentMethod">Payment Method</label>
+                    <select
+                        id="paymentMethod"
+                        name="paymentMethod"
+                        value={formData.paymentMethod}
+                        onChange={handleChange}
+                        className="w-full p-2 border border-gray-300 rounded"
+                        required
+                    >
+                        <option value="Credit Card">Credit Card</option>
+                        <option value="Debit Card">Debit Card</option>
+                        <option value="PayPal">PayPal</option>
+                        <option value="Bank Transfer">Bank Transfer</option>
+                    </select>
+                </div>
+                <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">Submit Order</button>
+            </form>
+               <Link href={'/productget/verify'}> <button className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600" >Verify</button> </Link>
         </div>
     )
 }
