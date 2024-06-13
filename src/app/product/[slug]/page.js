@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 
 const fetchProductData = async (slug) => {
-    const res = await fetch(`http://localhost:3000/api/getproduct?category=${slug}`);
+    const res = await fetch(`/api/getproduct?category=${slug}`);
     const data = await res.json();
     return data;
 }

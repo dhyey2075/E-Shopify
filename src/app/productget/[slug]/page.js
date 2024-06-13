@@ -6,7 +6,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import Link from 'next/link';
 
 const fetchProductData = async (slug) => {
-    const res = await fetch(`http://localhost:3000/api/getbyid?id=${slug}`);
+    const res = await fetch(`/api/getbyid?id=${slug}`);
     const data = await res.json();
     return data;
 }
@@ -51,7 +51,7 @@ const Page = ({ params }) => {
             return
         }
         e.preventDefault();
-        const res = await fetch('http://localhost:3000/api/addtocart', {
+        const res = await fetch('/api/addtocart', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

@@ -4,7 +4,7 @@ import { useSession } from "next-auth/react"
 import Link from 'next/link';
 
 const fetchProductData = async (slug) => {
-    const res = await fetch(`http://localhost:3000/api/getbyid?id=${slug}`);
+    const res = await fetch(`/api/getbyid?id=${slug}`);
     const data = await res.json();
     return data;
 }
@@ -82,7 +82,7 @@ const Page = ({ params }) => {
     const handleSubmit = async(e) => {
         e.preventDefault();
         console.log(ans)
-        const res = await fetch('http://localhost:3000/api/order', {
+        const res = await fetch('/api/order', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

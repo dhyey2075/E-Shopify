@@ -23,10 +23,10 @@ const Verify = () => {
       <h2 className="text-2xl font-bold mb-4">Order Verification</h2>
       { order.email && <><div className="mb-4">
         <p className="text-gray-700"><strong>Email:</strong> {order.email}</p>
-        <p className="text-gray-700"><strong>Product ID:</strong> {order.products.productID}</p>
-        <p className="text-gray-700"><strong>Quantity:</strong> {order.products.quantity}</p>
-        <p className="text-gray-700"><strong>Price:</strong> {order.products.price}</p>
-        <p className="text-gray-700"><strong>Total Amount:</strong> {order.totalAmount}</p>
+        <p className="text-gray-700"><strong>Product ID:</strong> {order.products[0].productID}</p>
+        <p className="text-gray-700"><strong>Quantity:</strong> {order.products[0].quantity}</p>
+        <p className="text-gray-700"><strong>Price:</strong> {order.products[0].price}</p>
+        <p className="text-gray-700"><strong>Total Amount:</strong> {parseInt(order.products[0].productID) * parseInt(order.products[0].quantity)}</p>
         <p className="text-gray-700"><strong>Status:</strong> {order.status}</p>
       </div>
       <div className="mb-4">
