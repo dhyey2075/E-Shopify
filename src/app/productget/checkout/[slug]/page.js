@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSession } from "next-auth/react"
 import Link from 'next/link';
-
+import { Festive } from 'next/font/google';
 const fetchProductData = async (slug) => {
     const res = await fetch(`/api/getbyid?id=${slug}`);
     const data = await res.json();
@@ -77,6 +77,13 @@ const Page = ({ params }) => {
                 [name]: value
             }
         }));
+        setFormData(prevState => ({
+            ...prevState,
+            "price": ans.products.price,
+            "productID": ans.products._id,
+            "email": session.user.email,
+            "totalAmount": ans.products.price * formData.quantity,
+        }));
     };
 
     const handleSubmit = async(e) => {
@@ -111,7 +118,6 @@ const Page = ({ params }) => {
             },
             paymentMethod: 'Credit Card'
         });
-        
     };
     useEffect(() => {
         // setFormData(prevState => ({
@@ -124,8 +130,8 @@ const Page = ({ params }) => {
 
     },[formData])
 
-    return (
-        <div>
+    {return (
+        <><div>
             <section className="text-gray-600 body-font overflow-hidden">
                 <div className="container px-5 py-24 mx-auto">
                     <div className="lg:w-4/5 mx-auto flex flex-wrap">
@@ -298,7 +304,8 @@ const Page = ({ params }) => {
                     </div>
                 </div>
             </section>
-            <form onSubmit={handleSubmit} className="max-w-lg mx-auto p-6 bg-white rounded-lg shadow-md">
+            {!session && <div className='text-3xl text-center' >Please login to order product.</div>}
+            {session && <form onSubmit={handleSubmit} className="max-w-lg mx-auto p-6 bg-white rounded-lg shadow-md">
                 <h2 className="text-2xl font-bold mb-4">Order Product</h2>
                 
                 
@@ -311,6 +318,7 @@ const Page = ({ params }) => {
                         value={formData.quantity}
                         onChange={handleChange}
                         className="w-full p-2 border border-gray-300 rounded"
+                        defaultValue={0}
                         min="1"
                         required
                     />
@@ -394,10 +402,10 @@ const Page = ({ params }) => {
                     </select>
                 </div>
                 <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">Submit Order</button>
-            </form>
-               <Link href={'/productget/verify'}> <button className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600" >Verify</button> </Link>
-        </div>
-    )
+               <Link href={'/productget/verify'}> <button className="w-full my-4 bg-blue-500 text-white p-2 rounded hover:bg-blue-600" >Verify</button> </Link>
+            </form>}
+        </div></>
+    )}
 }
 
 export default Page

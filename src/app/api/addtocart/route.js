@@ -8,9 +8,14 @@ export async function POST(reqq, res){
     const { name, email, product } = req;
     const cart = await new Cart({ name, email, productID: product._id, product });
     try{
+        const id = await Cart.findOne({ productID: product._id });
+        if(id){
+            return NextResponse.json({ status: 400, message: "Product already in cart." });
+        }
         await cart.save();
     }catch(err){
-        return NextResponse.json({ status: 400, message: "Failed to add product to cart." });
+        NextResponse.json({ status: 500, message: "Failed to add product to cart." });
     }
+    
     return NextResponse.json({ status: 200, cart });
 }

@@ -3,6 +3,8 @@ import React,{useEffect, useState} from 'react';
 import Link from 'next/link';
 import { useSession } from "next-auth/react"
 import { toast, Bounce } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const Mycart = () => {
     const { data: session, status } = useSession();
@@ -16,7 +18,7 @@ const Mycart = () => {
         const fetchData = async () => {
             if (status === "authenticated") {
                 console.log(session.user.email);
-                const res = await fetch(`http://localhost:3000/api/getcart?email=${session.user.email}`);
+                const res = await fetch(`/api/getcart?email=${session.user.email}`);
                 const data = await res.json();
                 setData(data);
             }
@@ -41,7 +43,7 @@ const Mycart = () => {
         alert("Are you sure you want to remove this product from your cart?")
         if(alert){
         console.log(id);
-        const res = await fetch(`http://localhost:3000/api/removefromcart?productID=${id}`);
+        const res = await fetch(`api/removefromcart?productID=${id}`);
         const data = await res.json();
         toast.success('Product removed from your cart.', {
             position: "top-right",
@@ -67,8 +69,9 @@ const Mycart = () => {
         <div>
             <h1 className='text-3xl text-center mt-7 font-bold'>My Cart</h1>
             {loading && <h1 className='my-3 text-3xl text-center'>Loading...</h1>}
+            {!session && <h1 className='my-3 text-3xl text-center'>Please login to view your cart.</h1>}
             {data.cart && data.cart.length === 0 && <h1 className='my-3 text-3xl text-center'>No items in cart.</h1>}
-            {data.cart && data.cart.length > 0 && <h1 className='my-3 text-3xl text-center'>Total: ${cartTotal()}</h1>}
+            {data.cart && data.cart.length > 0 && <h1 className='my-3 text-3xl text-center'>Cart Total: ${cartTotal().toString().split(".")[0]}</h1>}
             <div className="container px-5 py-10 mx-auto">
                 <div className="flex flex-wrap -m-4">
 

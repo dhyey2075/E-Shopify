@@ -5,16 +5,17 @@ const Page = () => {
         <div>
             <section className="text-gray-600 body-font relative">
                 <div className="container px-5 py-24 mx-auto flex sm:flex-nowrap flex-wrap">
-                    <div className="lg:w-2/3 md:w-1/2 bg-red-300 rounded-lg overflow-hidden sm:mr-10 p-10 flex items-end justify-start relative">
-                        <iframe
+                <iframe
                             src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d8822.593982316477!2d73.02320380531565!3d21.607622450982927!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2s!5e0!3m2!1sen!2sin!4v1718093257937!5m2!1sen!2sin"
-                            width="{600}"
+                            width="{800}"
                             height="{450}"
                             style={{ border: 0 }}
                             allowFullScreen={true}
                             loading="lazy"
                             referrerPolicy="no-referrer-when-downgrade"
                         />
+                    <div className="lg:w-1/3 md:w-1/2 bg-red-300 rounded-lg overflow-hidden sm:mr-10 p-10 flex items-center justify-center relative">
+                    
 
                         <div className="bg-white relative flex flex-wrap py-6 rounded shadow-md">
                             <div className="lg:w-1/2 px-6">
