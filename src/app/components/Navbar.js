@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { CiShoppingCart } from "react-icons/ci";
 import { IoMdMenu } from "react-icons/io";
+import { FaSearch } from "react-icons/fa";
 import { useSession, signIn, signOut } from "next-auth/react"
 import Link from 'next/link';
 import Image from 'next/image';
@@ -12,9 +13,15 @@ const Navbar = () => {
   console.log(session)
   const [isMenuOpen, setIsMenuOpen] = useState(true)
   const [isMobile, setIsMobile] = useState(false) // Initial value [false
+  const [search, setSearch] = useState('')
   const handleMenuClick = () => {
     setIsMenuOpen(!isMenuOpen); // Toggle the state
   };
+
+  const handleChange = (e) => {
+    setSearch(e.target.value)
+    console.log(e.target.value)
+  }
 
 
   useEffect(() => {
@@ -71,6 +78,8 @@ const Navbar = () => {
             </>
           }
           {!session && <button className='bg-pink-600 px-5 py-1 mx-3' onClick={() => signIn()}>Log in</button>}
+          <input onChange={handleChange} value={search} class="my-1 w-5/6 p-1 border-2 border-gray-300 rounded-lg text-black placeholder-gray-500 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500" type="text" placeholder="search here" />
+          <Link href={`/products/${search}`} ><FaSearch className='mx-2 inline-block text-3xl' /></Link>
 
         </span>
 
