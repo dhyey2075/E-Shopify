@@ -6,15 +6,19 @@ import { redirect } from "next/navigation";
 import axios from "axios";
 import { v4 as uuidv4 } from 'uuid';
 import { payment } from "@/app/action/ServerActions";
-
+import { set } from 'mongoose';
+import Image from 'next/image';
 
 const Verify = () => {
     const router = useRouter();
     const [order, setOrder] = useState({})
+    const [isLoading, setIsLoading] = useState(true)
     const fetchOrder = async () => {
+        setIsLoading(true)
         const res = sessionStorage.getItem('order');
         const data = JSON.parse(res)
         setOrder(data)
+        setIsLoading(false)
         return data
     }
     useEffect(() => {
@@ -80,7 +84,7 @@ const Verify = () => {
   // router.push(redirect)
 
     e.preventDefault();
-    const redirect = await payment(parseInt(order.products[0].price) * parseInt(order.products[0].quantity));
+    const redirect = await payment(parseInt(order.products[0].price) * parseInt(order.products[0].quantity) * 100);
     console.log("redirect>>>",redirect.url)
      router.push(redirect.url);
 
@@ -89,7 +93,10 @@ const Verify = () => {
     <div>
         <strong><h1 className='text-3xl text-center text-green-600' >Order Verification</h1></strong>
         <div className="max-w-lg mx-auto bg-white shadow-md p-6 rounded-md">
-      <h2 className="text-2xl font-bold mb-4">Order Verification</h2>
+        {isLoading && <div className="flex justify-center">
+          <Image src={'/loader2.gif'} height={5000} width={5000} />
+        </div>}
+      {!isLoading && <h2 className="text-2xl font-bold mb-4">Order Verification</h2>}
       { order.email && <><div className="mb-4">
         <p className="text-gray-700"><strong>Email:</strong> {order.email}</p>
         <p className="text-gray-700"><strong>Product ID:</strong> {order.products[0].productID}</p>
@@ -109,8 +116,9 @@ const Verify = () => {
       <p className="mb-4 text-gray-700"><strong>Payment Method:</strong> {order.paymentMethod}</p></>}
     </div>
     {/* <button onClick={makePayment} >Make Payment</button> */}
-    <button onClick={makePayment} className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600" >Pay Using PhonePe</button>
-
+        {!isLoading && <div className='flex justify-center my-4'>
+        <button onClick={makePayment} className="w-1/10 bg-purple-600 text-white px-10 py-2 rounded text-xl hover:bg-purple-700" >Pay Using PhonePe</button>
+        </div>}
     </div>
   )
 }

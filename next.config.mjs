@@ -45,6 +45,10 @@ const nextConfig = {
           {
             protocol: 'https',
             hostname: 'images.fonearena.com'
+          },
+          {
+            protocol: 'https',
+            hostname: 'w7.pngwing.com'
           }
         ],
       },

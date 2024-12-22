@@ -1,8 +1,29 @@
+'use client';
 import Image from "next/image";
 import Navbar from "@/app/components/Navbar.js";
 import Footer from "@/app/components/Footer.js";
 import Link from "next/link";
+import { useState } from "react";
+import 'react-toastify/dist/ReactToastify.css';
+import { toast, Bounce } from 'react-toastify';
 export default function Home() {
+  const [email, setEmail] = useState("");
+
+  const _showToast = () => {
+    // alert("Your subscribtion request has been successfully");
+    toast.info('Your subscribtion request has been successfully', {
+      position: "top-right",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+      transition: Bounce,
+      });
+  }
+
   return (
     <div>
 
@@ -159,9 +180,12 @@ export default function Home() {
           <input
             type="email"
             placeholder="Enter your email"
-            className="px-4 py-2 rounded w-full max-w-md"
+            className="text-black px-4 py-2 rounded w-full max-w-md"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
-          <button className="mt-4 bg-white text-blue-500 py-2 px-4 rounded">Subscribe</button>
+          <div></div>
+          <button className="mt-4 bg-white text-blue-500 py-2 px-4 rounded" onClick={_showToast} >Subscribe</button>
         </div>
       </div>
 

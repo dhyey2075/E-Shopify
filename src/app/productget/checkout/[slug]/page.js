@@ -82,7 +82,7 @@ const Page = ({ params }) => {
             "price": ans.products.price,
             "productID": ans.products._id,
             "email": session.user.email,
-            "totalAmount": ans.products.price * formData.quantity,
+            "totalAmount": ans.products.price * formData.quantity*100,
         }));
     };
 
